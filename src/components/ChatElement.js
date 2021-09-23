@@ -19,6 +19,7 @@ const User = styled.button`
 const UserInfo = styled.div`
   margin-left: 15px;
   text-align: left;
+  max-width: 70%;
 `;
 
 const Username = styled.p`
@@ -34,7 +35,6 @@ const Photo = styled.img`
 `;
 
 const LastMessages = styled.p`
-  max-width: 60vw;
   font-size: 1.4rem;
   overflow: hidden;
   text-overflow: ellipsis;

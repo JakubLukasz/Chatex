@@ -57,34 +57,6 @@ const FirestoreContextProvider = ({ children }) => {
     chatRef.delete();
   };
 
-  // const createChat = (partnerData, userData) => {
-  //   const chatPartnerRef = db
-  //     .collection('users')
-  //     .doc(currentUser.uid)
-  //     .collection('chats')
-  //     .doc(partnerData.uid);
-  //   const currentUserRef = db
-  //     .collection('users')
-  //     .doc(partnerData.uid)
-  //     .collection('chats')
-  //     .doc(currentUser.uid);
-  //   const chatID = generateID(20);
-  //   chatPartnerRef.set({
-  //     id: chatID,
-  //     messages: [],
-  //     username: partnerData.username,
-  //     photoURL: partnerData.photoURL,
-  //     uid: partnerData.uid,
-  //   });
-  //   currentUserRef.set({
-  //     id: chatID,
-  //     messages: [],
-  //     username: userData.username,
-  //     photoURL: userData.photoURL,
-  //     uid: userData.uid,
-  //   });
-  // };
-
   const createChat = (firstUser, secondUser) => {
     const chatRef = db
       .collection('users')
@@ -147,13 +119,13 @@ const FirestoreContextProvider = ({ children }) => {
     const isUserChatCreated = await checkIsChatCreated(
       userData.uid,
       partnerData.uid
-    ); // twoj
+    );
     const isPartnerChatCreated = await checkIsChatCreated(
       partnerData.uid,
       userData.uid
-    ); // partner
-    if (!isUserChatCreated) createChat(userData, partnerData); // twoj
-    if (!isPartnerChatCreated) createChat(partnerData, userData); // partnera
+    );
+    if (!isUserChatCreated) createChat(userData, partnerData);
+    if (!isPartnerChatCreated) createChat(partnerData, userData);
   };
 
   const sendMessage = async (message, partnerData, userData) => {
@@ -170,6 +142,23 @@ const FirestoreContextProvider = ({ children }) => {
       usernames.push(username.toLowerCase());
     });
     return usernames;
+  };
+
+  const getChatSize = async () => {
+    const chatRef = db
+      .collection('users')
+      .doc(currentUser.uid)
+      .collection('chats');
+    const snapshot = await chatRef.get();
+    const count = snapshot.size;
+    return count;
+  };
+
+  const getUsersSize = async () => {
+    const usersRef = db.collection('users');
+    const snapshot = await usersRef.get();
+    const count = snapshot.size;
+    return count;
   };
 
   const getChatUsernames = async () => {
@@ -250,6 +239,8 @@ const FirestoreContextProvider = ({ children }) => {
     getChatUsernames,
     changePhoto,
     clearUser,
+    getChatSize,
+    getUsersSize,
   };
 
   return (

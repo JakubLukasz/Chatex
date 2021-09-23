@@ -4,7 +4,9 @@ import SearchBar from '../components/SearchBar';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../services/firebase';
 import ChatElement from '../components/ChatElement';
+import { useLoading } from '../hooks/useLoading';
 import NoMessages from '../components/NoMessages';
+import { useFirestore } from '../hooks/useFirestore';
 
 const Main = styled.div`
   padding: 0 20px;
@@ -22,8 +24,16 @@ const Messages = () => {
   const { currentUser } = useAuth();
   const [searchPhrase, setSearchPhrase] = useState('');
   const [chats, setChats] = useState([]);
+  const [chatSize, setChatSize] = useState(null);
+  const { setIsLoading } = useLoading();
+  const { getChatSize } = useFirestore();
 
   useEffect(() => {
+    getChatSize().then((size) => setChatSize(size));
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
     const chatRef = db
       .collection('users')
       .doc(currentUser.uid)
@@ -42,6 +52,10 @@ const Messages = () => {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (chatSize == chats.length) setIsLoading(false);
+  }, [chats]);
 
   return (
     <Main>

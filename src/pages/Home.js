@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import SearchBar from '../components/SearchBar';
 import { useFirestore } from '../hooks/useFirestore';
 import { useAuth } from '../hooks/useAuth';
+import { useLoading } from '../hooks/useLoading';
 import UserElement from '../components/UserElement';
 import { db } from '../services/firebase';
 
@@ -24,10 +25,17 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [searchPhrase, setSearchPhrase] = useState('');
   const [chatUsernames, setChatUsernames] = useState([]);
-  const { getChatUsernames } = useFirestore();
+  const [usersSize, setUsersSize] = useState(null);
+  const { getUsersSize, getChatUsernames } = useFirestore();
   const { currentUser } = useAuth();
+  const { setIsLoading } = useLoading();
 
   useEffect(() => {
+    getUsersSize().then((size) => setUsersSize(size));
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
     const usersRef = db.collection('users');
     const unsubscribe = usersRef.onSnapshot((snapshot) => {
       const tmp = [];
@@ -45,6 +53,10 @@ const Home = () => {
   useEffect(() => {
     getChatUsernames().then((usernames) => setChatUsernames(usernames));
   }, []);
+
+  useEffect(() => {
+    if (usersSize === users.length) setIsLoading(false);
+  }, [usersSize, users]);
 
   const checkChat = (username) => {
     const resp = chatUsernames.includes(username);
