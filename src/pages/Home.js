@@ -79,7 +79,7 @@ const Home = () => {
               )
                 return user;
             })
-            .map((user) => <UserElement key={user.username} {...user} />)}
+            .map((user) => <UserElement key={user.uid} {...user} />)}
       </Users>
     </Main>
   );

@@ -24,7 +24,7 @@ const Messages = () => {
   const { currentUser } = useAuth();
   const [searchPhrase, setSearchPhrase] = useState('');
   const [chats, setChats] = useState([]);
-  const [chatSize, setChatSize] = useState(null);
+  const [chatSize, setChatSize] = useState(0);
   const { setIsLoading } = useLoading();
   const { getChatSize } = useFirestore();
 
