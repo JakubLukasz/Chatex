@@ -3,8 +3,11 @@ import Icon from './Icon';
 import styled from 'styled-components';
 import GoogleIcon from '../assets/images/googleIcon.svg';
 import PropTypes from 'prop-types';
+import { useAuth } from '../hooks/useAuth';
+import { useHistory } from 'react-router-dom';
+import { useFirestore } from '../hooks/useFirestore';
 
-const Container = styled.button`
+const GoogleButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,7 +15,6 @@ const Container = styled.button`
   border: 1px solid ${({ theme }) => theme.color.lightSecondary};
   border-radius: 50%;
   margin: 0 10px;
-  cursor: pointer;
 `;
 
 const StyledIcon = styled(Icon)`
@@ -20,16 +22,28 @@ const StyledIcon = styled(Icon)`
   width: auto;
 `;
 
-const GoogleProvider = () => {
+const GoogleProvider = ({ setFormError }) => {
+  const history = useHistory();
+  const { googleAuth } = useAuth();
+  const { checkIsProviderDataExists } = useFirestore();
+  const handleSignin = async () => {
+    try {
+      const { user } = await googleAuth();
+      await checkIsProviderDataExists(user);
+      history.push('/');
+    } catch (error) {
+      setFormError(error.message);
+    }
+  };
   return (
-    <Container>
+    <GoogleButton onClick={handleSignin}>
       <StyledIcon src={GoogleIcon} />
-    </Container>
+    </GoogleButton>
   );
 };
 
 GoogleProvider.propTypes = {
-  className: PropTypes.string,
+  setFormError: PropTypes.func,
 };
 
 export default GoogleProvider;

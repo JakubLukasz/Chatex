@@ -1,34 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { devices } from '../assets/styles/devices';
+import { Link, useHistory } from 'react-router-dom';
 import Providers from '../components/Providers';
 import { useForm } from 'react-hook-form';
+import { useAuth } from '../hooks/useAuth';
+import FormMessage from '../components/FormMessage';
+import Logo from '../components/Logo';
+import Preview from '../components/Preview';
 
 const Container = styled.main`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 100vh;
-`;
-
-const ImgSection = styled.div`
-  display: none;
-  background-color: ${({ theme }) => theme.color.primary};
-  flex: 3;
-  height: 100%;
-
-  @media ${devices.tabletVerL} {
-    display: block;
-    flex: 2;
-  }
-  @media ${devices.tabletL} {
-    display: block;
-  }
-  @media ${devices.laptop} {
-    flex: 3;
-  }
+  height: var(--app-height);
 `;
 
 const FormSection = styled.div`
@@ -44,12 +29,10 @@ const Main = styled.main`
   margin: 0 auto;
 `;
 
-const Title = styled.h2`
+const StyledLogo = styled(Logo)`
   font-size: 4rem;
   text-align: center;
-  margin: 20px 0 40px 0;
-  font-family: ${({ theme }) => theme.font.family.dancingScript};
-  color: ${({ theme }) => theme.color.primary};
+  margin-bottom: 20px;
 `;
 
 const Form = styled.form`
@@ -79,7 +62,7 @@ const InputField = styled.input`
 
 const InputLabel = styled.label`
   font-size: 1.3rem;
-  margin: 20px 0 10px;
+  margin: 10px 0 5px;
   color: ${({ theme }) => theme.color.secondary};
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
 `;
@@ -108,10 +91,9 @@ const SubmitButton = styled.button`
   color: #ffffff;
   padding: 10px 15px;
   border-radius: 7px;
-  margin: 20px 0 0;
+  margin-top: 20px;
   width: 50%;
   align-self: center;
-  cursor: pointer;
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
 `;
 
@@ -119,30 +101,44 @@ const StyledProviders = styled(Providers)`
   margin: 20px 0 0;
 `;
 
+const Error = styled.span`
+  font-size: 1.1rem;
+  font-weight: ${({ theme }) => theme.font.weight.medium};
+  color: #ff0033;
+  margin: 5px 0 0;
+`;
+
 const Signin = () => {
+  const [formError, setFormError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     handleSubmit,
     register,
     formState: { errors },
+    // setError,
   } = useForm();
+  const { signIn } = useAuth();
+  const history = useHistory();
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      setIsLoading(true);
+      await signIn(data.email, data.password);
+      history.push('/');
+    } catch (error) {
+      setFormError(error.message);
+    }
+    setIsLoading(false);
   };
-
-  const Error = styled.span`
-    font-size: 1.4rem;
-    font-weight: ${({ theme }) => theme.font.weight.medium};
-    color: #ff0033;
-    margin: 10px 0 0;
-  `;
 
   return (
     <Container>
-      <ImgSection></ImgSection>
+      <Preview />
       <FormSection>
         <Main>
-          <Title>Chatex</Title>
+          <StyledLogo />
+          {formError && <FormMessage error message={formError} />}
           <Form onSubmit={handleSubmit(onSubmit)}>
             <InputLabel>Email</InputLabel>
             <InputField
@@ -165,10 +161,12 @@ const Signin = () => {
             />
             {errors.password && <Error>{errors.password.message}</Error>}
             <ResetLink to="/reset">Forgot password?</ResetLink>
-            <SubmitButton type="submit">Sign in</SubmitButton>
-            <AccountLink to="/signup">Create an Account</AccountLink>
+            <SubmitButton disabled={isLoading} type="submit">
+              Sign in
+            </SubmitButton>
+            <AccountLink to="/signup">Create an Account with email</AccountLink>
           </Form>
-          <StyledProviders />
+          <StyledProviders setFormError={setFormError} />
         </Main>
       </FormSection>
     </Container>

@@ -12,6 +12,7 @@ const GlobalStyle = createGlobalStyle`
         box-sizing:border-box;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        margin:0;
     }
 
     @font-face{
@@ -69,6 +70,16 @@ const GlobalStyle = createGlobalStyle`
     button{
         background:none;
         border:none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    a{
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+    --app-height: 100%;
     }
 
     html{
@@ -83,6 +94,13 @@ const GlobalStyle = createGlobalStyle`
         margin:0;
         padding:0;
         font-family:${({ theme }) => theme.font.family.montserrat};
+        padding: 0;
+        overflow: hidden;
+        height: 100vh;
+
+        @media not all and (hover:hover) {
+        height: var(--app-height);
+        }
     }
 `;
 

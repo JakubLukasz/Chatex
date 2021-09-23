@@ -16,18 +16,19 @@ const Text = styled.span`
   color: ${({ theme }) => theme.color.secondary};
 `;
 
-const Providers = ({ className }) => {
+const Providers = ({ className, setFormError }) => {
   return (
     <Container className={className}>
       <Text>Sign in with</Text>
-      <GoogleProvider />
-      <FacebookProvider />
+      <GoogleProvider setFormError={setFormError} />
+      <FacebookProvider setFormError={setFormError} />
     </Container>
   );
 };
 
 Providers.propTypes = {
   className: PropTypes.string,
+  setFormError: PropTypes.func,
 };
 
 export default Providers;

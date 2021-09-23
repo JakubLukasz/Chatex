@@ -1,33 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { devices } from '../assets/styles/devices';
 import { useForm } from 'react-hook-form';
+import { useAuth } from '../hooks/useAuth';
+import FormMessage from '../components/FormMessage';
+import Preview from '../components/Preview';
 
 const Container = styled.main`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 100vh;
-`;
-
-const ImgSection = styled.div`
-  display: none;
-  background-color: ${({ theme }) => theme.color.primary};
-  flex: 3;
-  height: 100%;
-
-  @media ${devices.tabletVerL} {
-    display: block;
-    flex: 2;
-  }
-  @media ${devices.tabletL} {
-    display: block;
-  }
-  @media ${devices.laptop} {
-    flex: 3;
-  }
+  height: var(--app-height);
 `;
 
 const FormSection = styled.div`
@@ -46,7 +30,7 @@ const Main = styled.main`
 const Title = styled.h2`
   font-size: 4rem;
   text-align: center;
-  margin: 20px 0 40px 0;
+  margin-bottom: 20px;
   font-family: ${({ theme }) => theme.font.family.dancingScript};
   color: ${({ theme }) => theme.color.primary};
 `;
@@ -78,7 +62,7 @@ const InputField = styled.input`
 
 const InputLabel = styled.label`
   font-size: 1.3rem;
-  margin: 20px 0 10px;
+  margin: 10px 0 5px;
   color: ${({ theme }) => theme.color.secondary};
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
 `;
@@ -105,34 +89,50 @@ const SubmitButton = styled.button`
   margin: 40px 0 0;
   width: 50%;
   align-self: center;
-  cursor: pointer;
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
 `;
 
+const Error = styled.span`
+  font-size: 1.4rem;
+  font-weight: ${({ theme }) => theme.font.weight.medium};
+  color: #ff0033;
+  margin: 10px 0 0;
+`;
+
 const Reset = () => {
+  const { resetPassword } = useAuth();
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // const Error = styled.span`
-  //   font-size: 1.4rem;
-  //   font-weight: ${({ theme }) => theme.font.weight.medium};
-  //   color: #ff0033;
-  //   margin: 10px 0 0;
-  // `;
+  const onSubmit = async (data) => {
+    try {
+      setError('');
+      setMessage('');
+      setIsLoading(true);
+      const resp = await resetPassword(data.email);
+      console.log(resp);
+      setMessage('Check your email');
+    } catch (error) {
+      setError(error.message);
+    }
+    setIsLoading(false);
+  };
 
   return (
     <Container>
-      <ImgSection></ImgSection>
+      <Preview />
       <FormSection>
         <Main>
           <Title>Chatex</Title>
+          {error && <FormMessage error message={error} />}
+          {message && <FormMessage message={message} />}
           <Form onSubmit={handleSubmit(onSubmit)}>
             <InputLabel>Email</InputLabel>
             <InputField
@@ -146,8 +146,10 @@ const Reset = () => {
               type="text"
               name="email"
             />
-            {errors.email && <span>{errors.email.message}</span>}
-            <SubmitButton type="submit">Reset</SubmitButton>
+            {errors.email && <Error>{errors.email.message}</Error>}
+            <SubmitButton disabled={isLoading} type="submit">
+              Reset
+            </SubmitButton>
             <AccountLink to="/signin">Sign in with your account</AccountLink>
           </Form>
         </Main>

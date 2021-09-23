@@ -18,5 +18,7 @@ export const theme = {
     secondary: '#303030',
     lightPrimary: '',
     lightSecondary: '#d9d9d9',
+    background: '#f6f6fc',
+    border: '#999999',
   },
 };

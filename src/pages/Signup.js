@@ -1,34 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { devices } from '../assets/styles/devices';
-import Providers from '../components/Providers';
+import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useAuth } from '../hooks/useAuth';
+import FormMessage from '../components/FormMessage';
+import Logo from '../components/Logo';
+import { useFirestore } from '../hooks/useFirestore';
+import Preview from '../components/Preview';
 
 const Container = styled.main`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 100vh;
-`;
-
-const ImgSection = styled.div`
-  display: none;
-  background-color: ${({ theme }) => theme.color.primary};
-  flex: 3;
-  height: 100%;
-
-  @media ${devices.tabletVerL} {
-    display: block;
-    flex: 2;
-  }
-  @media ${devices.tabletL} {
-    display: block;
-  }
-  @media ${devices.laptop} {
-    flex: 3;
-  }
+  height: var(--app-height);
 `;
 
 const FormSection = styled.div`
@@ -44,12 +29,10 @@ const Main = styled.main`
   margin: 0 auto;
 `;
 
-const Title = styled.h2`
+const StyledLogo = styled(Logo)`
   font-size: 4rem;
   text-align: center;
-  margin: 20px 0 40px 0;
-  font-family: ${({ theme }) => theme.font.family.dancingScript};
-  color: ${({ theme }) => theme.color.primary};
+  margin-bottom: 20px;
 `;
 
 const Form = styled.form`
@@ -79,7 +62,7 @@ const InputField = styled.input`
 
 const InputLabel = styled.label`
   font-size: 1.3rem;
-  margin: 20px 0 10px;
+  margin: 10px 0 5px;
   color: ${({ theme }) => theme.color.secondary};
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
 `;
@@ -103,15 +86,17 @@ const SubmitButton = styled.button`
   color: #ffffff;
   padding: 10px 15px;
   border-radius: 7px;
-  margin: 20px 0 0;
+  margin-top: 20px;
   width: 50%;
   align-self: center;
-  cursor: pointer;
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
 `;
 
-const StyledProviders = styled(Providers)`
-  margin: 20px 0 0;
+const Error = styled.span`
+  font-size: 1.1rem;
+  font-weight: ${({ theme }) => theme.font.weight.medium};
+  color: #ff0033;
+  margin: 5px 0 0;
 `;
 
 const Signin = () => {
@@ -121,25 +106,63 @@ const Signin = () => {
     getValues,
     formState: { errors },
   } = useForm();
+  const { signUp } = useAuth();
+  const history = useHistory();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState('');
+  const { createUserData, getAllUsernames } = useFirestore();
+  const [allUsernames, setAllUsernames] = useState([]);
 
-  const onSubmit = (data) => {
-    console.log(data);
+  useEffect(() => {
+    getAllUsernames().then((usernames) => setAllUsernames(usernames));
+  }, []);
+
+  const onSubmit = async ({ username, email, password }) => {
+    try {
+      setFormError('');
+      setIsLoading(true);
+      const { user } = await signUp(email, password);
+      await createUserData(username, user);
+      history.push('/');
+    } catch (error) {
+      setFormError(error.message);
+    }
+    setIsLoading(false);
   };
 
-  // const Error = styled.span`
-  //   font-size: 1.4rem;
-  //   font-weight: ${({ theme }) => theme.font.weight.medium};
-  //   color: #ff0033;
-  //   margin: 10px 0 0;
-  // `;
+  const checkUsername = (username) => {
+    const isRepeated = allUsernames.includes(username.toLowerCase());
+    if (!isRepeated) return username;
+    else return false;
+  };
 
   return (
     <Container>
-      <ImgSection></ImgSection>
+      <Preview />
       <FormSection>
         <Main>
-          <Title>Chatex</Title>
+          <StyledLogo />
+          {formError && <FormMessage error message={formError} />}
           <Form onSubmit={handleSubmit(onSubmit)}>
+            <InputLabel>Username</InputLabel>
+            <InputField
+              {...register('username', {
+                required: 'Username is Required',
+                minLength: {
+                  value: 5,
+                  message: 'Username must have at least 5 characters',
+                },
+                maxLength: {
+                  value: 25,
+                  message: 'Username cannot be longer than 25 characters',
+                },
+                validate: (value) =>
+                  value === checkUsername(value) || 'Username already taken',
+              })}
+              type="text"
+              name="username"
+            />
+            {errors.username && <Error>{errors.username.message}</Error>}
             <InputLabel>Email</InputLabel>
             <InputField
               {...register('email', {
@@ -152,20 +175,20 @@ const Signin = () => {
               type="text"
               name="email"
             />
-            {errors.email && <span>{errors.email.message}</span>}
+            {errors.email && <Error>{errors.email.message}</Error>}
             <InputLabel>Password</InputLabel>
             <InputField
               {...register('password', {
                 required: 'Password is Required',
                 minLength: {
                   value: 8,
-                  message: 'Password must have a tlaest 8 characters',
+                  message: 'Password must have at least 8 characters',
                 },
               })}
               type="password"
               name="password"
             />
-            {errors.password && <span>{errors.password.message}</span>}
+            {errors.password && <Error>{errors.password.message}</Error>}
             <InputLabel>Confirm Password</InputLabel>
             <InputField
               {...register('confirm__password', {
@@ -177,12 +200,13 @@ const Signin = () => {
               name="confirm__password"
             />
             {errors.confirm__password && (
-              <span>{errors.confirm__password.message}</span>
+              <Error>{errors.confirm__password.message}</Error>
             )}
-            <SubmitButton type="submit">Sign up</SubmitButton>
+            <SubmitButton disabled={isLoading} type="submit">
+              Sign up
+            </SubmitButton>
             <AccountLink to="/signin">Sign in with your account</AccountLink>
           </Form>
-          <StyledProviders />
         </Main>
       </FormSection>
     </Container>
