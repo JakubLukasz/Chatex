@@ -24,13 +24,9 @@ const Messages = () => {
   const { currentUser } = useAuth();
   const [searchPhrase, setSearchPhrase] = useState('');
   const [chats, setChats] = useState([]);
-  const [chatSize, setChatSize] = useState(0);
+  const [chatLength, setChatLength] = useState(null);
   const { setIsLoading } = useLoading();
   const { getChatSize } = useFirestore();
-
-  useEffect(() => {
-    getChatSize().then((size) => setChatSize(size));
-  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -41,6 +37,7 @@ const Messages = () => {
     const unsubscribe = chatRef.onSnapshot((snapshot) => {
       const tmp = [];
       if (snapshot.size) {
+        getChatSize().then((resp) => setChatLength(resp));
         snapshot.forEach((doc) => tmp.push(doc.data()));
         tmp.sort(
           (a, b) =>
@@ -54,8 +51,9 @@ const Messages = () => {
   }, []);
 
   useEffect(() => {
-    if (chatSize == chats.length) setIsLoading(false);
-  }, [chats]);
+    console.log(chatLength, chats.length);
+    if (chatLength === chats.length) setIsLoading(false);
+  }, [chats, chatLength]);
 
   return (
     <Main>

@@ -25,14 +25,10 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [searchPhrase, setSearchPhrase] = useState('');
   const [chatUsernames, setChatUsernames] = useState([]);
-  const [usersSize, setUsersSize] = useState(null);
+  const [usersLength, setUsersLength] = useState(null);
   const { getUsersSize, getChatUsernames } = useFirestore();
   const { currentUser } = useAuth();
   const { setIsLoading } = useLoading();
-
-  useEffect(() => {
-    getUsersSize().then((size) => setUsersSize(size));
-  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -40,6 +36,7 @@ const Home = () => {
     const unsubscribe = usersRef.onSnapshot((snapshot) => {
       const tmp = [];
       if (snapshot.size) {
+        getUsersSize().then((resp) => setUsersLength(resp));
         snapshot.forEach((doc) => tmp.push(doc.data()));
         tmp.sort(
           (a, b) => new Date(b.createdDateTime) - new Date(a.createdDateTime)
@@ -51,12 +48,13 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    getChatUsernames().then((usernames) => setChatUsernames(usernames));
-  }, []);
+    console.log(usersLength, users.length);
+    if (usersLength === users.length) setIsLoading(false);
+  }, [users, usersLength]);
 
   useEffect(() => {
-    if (usersSize === users.length) setIsLoading(false);
-  }, [usersSize, users]);
+    getChatUsernames().then((usernames) => setChatUsernames(usernames));
+  }, []);
 
   const checkChat = (username) => {
     const resp = chatUsernames.includes(username);
