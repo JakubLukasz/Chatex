@@ -8,8 +8,8 @@ LIVE: www.chatex.jakublukaszewski.pl
 
 ## Screenshots
 
-<img src="./src/screenshots/screenshot1.jpg" alt="screenshot1" />
-<img src="./src/screenshots/screenshot2.jpg" alt="screenshot2" />
+<img src="./src/screenshots/screenshot1.jpg" alt="screenshot1" width="30%"/>
+<img src="./src/screenshots/screenshot2.jpg" alt="screenshot2" width="30%"/>
 
 ## Instalation
 
