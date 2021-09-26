@@ -6,6 +6,13 @@ Chatex is an application for exchanging messages between users in real time. Bui
 
 LIVE: www.chatex.jakublukaszewski.pl
 
+## Screenshots
+
+<img src="./src/screenshots/screenshot1.jpg" alt="screenshot1" width="30%"/>
+<img src="./src/screenshots/screenshot2.jpg" alt="screenshot2" width="30%"/>
+<img src="./src/screenshots/screenshot3.jpg" alt="screenshot3" width="30%"/><br>
+<img src="./src/screenshots/screenshot4.jpg" alt="screenshot4" width="90%/>
+
 ## Instalation
 
 ```
