@@ -36,22 +36,19 @@ const Messages = () => {
       .collection('chats');
     const unsubscribe = chatRef.onSnapshot((snapshot) => {
       const tmp = [];
-      if (snapshot.size) {
-        getChatSize().then((resp) => setChatLength(resp));
-        snapshot.forEach((doc) => tmp.push(doc.data()));
-        tmp.sort(
-          (a, b) =>
-            new Date(b.messages[0].sendDateTime) -
-            new Date(a.messages[0].sendDateTime)
-        );
-        setChats(tmp);
-      }
+      getChatSize().then((resp) => setChatLength(resp));
+      snapshot.forEach((doc) => tmp.push(doc.data()));
+      tmp.sort(
+        (a, b) =>
+          new Date(b.messages[0].sendDateTime) -
+          new Date(a.messages[0].sendDateTime)
+      );
+      setChats(tmp);
     });
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    console.log(chatLength, chats.length);
     if (chatLength === chats.length) setIsLoading(false);
   }, [chats, chatLength]);
 

@@ -35,20 +35,17 @@ const Home = () => {
     const usersRef = db.collection('users');
     const unsubscribe = usersRef.onSnapshot((snapshot) => {
       const tmp = [];
-      if (snapshot.size) {
-        getUsersSize().then((resp) => setUsersLength(resp));
-        snapshot.forEach((doc) => tmp.push(doc.data()));
-        tmp.sort(
-          (a, b) => new Date(b.createdDateTime) - new Date(a.createdDateTime)
-        );
-        setUsers(tmp);
-      }
+      getUsersSize().then((resp) => setUsersLength(resp));
+      snapshot.forEach((doc) => tmp.push(doc.data()));
+      tmp.sort(
+        (a, b) => new Date(b.createdDateTime) - new Date(a.createdDateTime)
+      );
+      setUsers(tmp);
     });
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    console.log(usersLength, users.length);
     if (usersLength === users.length) setIsLoading(false);
   }, [users, usersLength]);
 
