@@ -2,12 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Loading = styled.div`
-  width: 100vw;
-  height: var(--app-height);
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  background-color: #ffffff;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,11 +14,11 @@ const Loading = styled.div`
 `;
 
 const LoadingIcon = styled.div`
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid ${({ theme }) => theme.color.primary};
+  border: 3px solid #dedede;
+  border-top: 3px solid ${({ theme }) => theme.color.primary};
   border-radius: 50%;
-  width: 80px;
-  height: 80px;
+  width: 10rem;
+  height: 10rem;
   animation: spin 1s linear infinite;
   @keyframes spin {
     0% {
@@ -34,7 +33,7 @@ const LoadingIcon = styled.div`
 const LoadingScreen = () => {
   return (
     <Loading>
-      <LoadingIcon></LoadingIcon>
+      <LoadingIcon />
     </Loading>
   );
 };

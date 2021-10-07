@@ -19,7 +19,7 @@ const NoMessage = styled(Icon)`
   align-self: center;
   width: 10rem;
   margin: 30px 0 20px;
-  height: auto;
+  height: 10rem;
 `;
 
 const Info = styled.p`

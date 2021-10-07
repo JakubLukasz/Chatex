@@ -19,7 +19,7 @@ const GoogleButton = styled.button`
 
 const StyledIcon = styled(Icon)`
   height: 2rem;
-  width: auto;
+  width: 2rem;
 `;
 
 const GoogleProvider = ({ setFormError }) => {

@@ -3,18 +3,17 @@ import styled from 'styled-components';
 import SearchBar from '../components/SearchBar';
 import { useFirestore } from '../hooks/useFirestore';
 import { useAuth } from '../hooks/useAuth';
-import { useLoading } from '../hooks/useLoading';
+import LoadingScreen from '../components/LoadingScreen';
 import UserElement from '../components/UserElement';
 import { db } from '../services/firebase';
 
 const Main = styled.div`
+  position: relative;
   padding: 0 20px;
   flex: 1;
   background-color: ${({ theme }) => theme.color.background};
   overflow: auto;
 `;
-
-const Users = styled.div``;
 
 const Title = styled.h2`
   margin-top: 20px;
@@ -25,10 +24,10 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [searchPhrase, setSearchPhrase] = useState('');
   const [chatUsernames, setChatUsernames] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [usersLength, setUsersLength] = useState(null);
   const { getUsersSize, getChatUsernames } = useFirestore();
   const { currentUser } = useAuth();
-  const { setIsLoading } = useLoading();
 
   useEffect(() => {
     setIsLoading(true);
@@ -58,26 +57,35 @@ const Home = () => {
     return resp;
   };
 
-  return (
-    <Main>
-      <SearchBar setSearchPhrase={setSearchPhrase} />
-      <Users>
-        <Title>Latest Accounts</Title>
-        {users &&
-          users
-            .filter(({ uid }) => uid !== currentUser.uid)
-            .filter(({ username }) => !checkChat(username))
-            .filter((user) => {
-              if (searchPhrase == '') return user;
-              else if (
-                user.username.toLowerCase().includes(searchPhrase.toLowerCase())
-              )
-                return user;
-            })
-            .map((user) => <UserElement key={user.uid} {...user} />)}
-      </Users>
-    </Main>
-  );
+  if (isLoading)
+    return (
+      <Main>
+        <LoadingScreen />
+      </Main>
+    );
+  else
+    return (
+      <Main>
+        <SearchBar setSearchPhrase={setSearchPhrase} />
+        <div>
+          <Title>Latest Accounts</Title>
+          {users &&
+            users
+              .filter(({ uid }) => uid !== currentUser.uid)
+              .filter(({ username }) => !checkChat(username))
+              .filter((user) => {
+                if (searchPhrase == '') return user;
+                else if (
+                  user.username
+                    .toLowerCase()
+                    .includes(searchPhrase.toLowerCase())
+                )
+                  return user;
+              })
+              .map((user) => <UserElement key={user.uid} {...user} />)}
+        </div>
+      </Main>
+    );
 };
 
 export default Home;

@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import FormMessage from '../components/FormMessage';
 import Logo from '../components/Logo';
 import Preview from '../components/Preview';
+import ExampleData from '../components/ExampleData';
 
 const Container = styled.main`
   display: flex;
@@ -138,6 +139,7 @@ const Signin = () => {
       <FormSection>
         <Main>
           <StyledLogo />
+          <ExampleData />
           {formError && <FormMessage error message={formError} />}
           <Form onSubmit={handleSubmit(onSubmit)}>
             <InputLabel>Email</InputLabel>

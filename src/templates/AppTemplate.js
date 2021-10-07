@@ -8,9 +8,7 @@ import Profile from '../pages/Profile';
 import AppHeader from '../components/AppHeader';
 import { useChat } from '../hooks/useChat';
 import Chat from '../components/Chat';
-import { useLoading } from '../hooks/useLoading';
 import { devices } from '../assets/styles/devices';
-import LoadingScreen from '../components/LoadingScreen';
 
 const Container = styled.div`
   width: 100vw;
@@ -30,11 +28,9 @@ const Container = styled.div`
 
 const AppTemplate = () => {
   const { isChatOpen } = useChat();
-  const { isLoading } = useLoading();
   return (
     <Container>
       <Router>
-        {isLoading && <LoadingScreen />}
         {isChatOpen && <Chat isChatOpen={isChatOpen} />}
         <AppHeader />
         <Switch>

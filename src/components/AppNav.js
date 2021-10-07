@@ -11,7 +11,6 @@ import { devices } from '../assets/styles/devices';
 
 const Navigation = styled.nav`
   display: flex;
-  justify-content: space-around;
   width: 100%;
   z-index: 9997;
   background-color: #ffffff;
@@ -23,16 +22,24 @@ const Navigation = styled.nav`
 `;
 
 const LogOutButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
   padding: 15px 10px;
 `;
 
 const StyledIcon = styled(Icon)`
-  width: auto;
+  width: 2.3rem;
   height: 2.3rem;
   fill: #bdbdbd;
 `;
 
 const StyledNavLink = styled(NavLink)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
   padding: 15px 10px;
 
   &.open svg {

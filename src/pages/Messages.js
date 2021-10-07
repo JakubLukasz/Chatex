@@ -4,15 +4,16 @@ import SearchBar from '../components/SearchBar';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../services/firebase';
 import ChatElement from '../components/ChatElement';
-import { useLoading } from '../hooks/useLoading';
 import NoMessages from '../components/NoMessages';
 import { useFirestore } from '../hooks/useFirestore';
+import LoadingScreen from '../components/LoadingScreen';
 
 const Main = styled.div`
   padding: 0 20px;
   background-color: ${({ theme }) => theme.color.background};
   flex: 1;
   overflow: auto;
+  position: relative;
 `;
 
 const Title = styled.h2`
@@ -23,9 +24,9 @@ const Title = styled.h2`
 const Messages = () => {
   const { currentUser } = useAuth();
   const [searchPhrase, setSearchPhrase] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [chats, setChats] = useState([]);
   const [chatLength, setChatLength] = useState(null);
-  const { setIsLoading } = useLoading();
   const { getChatSize } = useFirestore();
 
   useEffect(() => {
@@ -52,24 +53,31 @@ const Messages = () => {
     if (chatLength === chats.length) setIsLoading(false);
   }, [chats, chatLength]);
 
-  return (
-    <Main>
-      {chats.length !== 0 && <SearchBar setSearchPhrase={setSearchPhrase} />}
-      <Title>Chats</Title>
-      {chats &&
-        chats
-          .filter((chat) => chat.messages.length !== 0)
-          .filter((chat) => {
-            if (searchPhrase == '') return chat;
-            else if (
-              chat.username.toLowerCase().includes(searchPhrase.toLowerCase())
-            )
-              return chat;
-          })
-          .map((chat) => <ChatElement key={chat.id} {...chat} />)}
-      {chats.length === 0 && <NoMessages />}
-    </Main>
-  );
+  if (isLoading)
+    return (
+      <Main>
+        <LoadingScreen />
+      </Main>
+    );
+  else
+    return (
+      <Main>
+        {chats.length !== 0 && <SearchBar setSearchPhrase={setSearchPhrase} />}
+        <Title>Chats</Title>
+        {chats &&
+          chats
+            .filter((chat) => chat.messages.length !== 0)
+            .filter((chat) => {
+              if (searchPhrase == '') return chat;
+              else if (
+                chat.username.toLowerCase().includes(searchPhrase.toLowerCase())
+              )
+                return chat;
+            })
+            .map((chat) => <ChatElement key={chat.id} {...chat} />)}
+        {chats.length === 0 && <NoMessages />}
+      </Main>
+    );
 };
 
 export default Messages;

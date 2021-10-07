@@ -14,6 +14,7 @@ const Container = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 
   @media ${devices.tablet} {
     border-bottom: 1px solid ${({ theme }) => theme.color.border};
@@ -43,7 +44,7 @@ const Username = styled.h2`
 `;
 
 const StyledCloseIcon = styled(Icon)`
-  width: auto;
+  width: 2rem;
   height: 2rem;
 `;
 

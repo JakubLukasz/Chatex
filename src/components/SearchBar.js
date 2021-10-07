@@ -25,7 +25,7 @@ const Input = styled.input`
 
 const Search = styled(Icon)`
   width: 1.5rem;
-  height: auto;
+  height: 1.5rem;
   margin: 0 10px 0 5px;
   display: flex;
   justify-content: center;
