@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import FormMessage from '../components/FormMessage';
 import Logo from '../components/Logo';
 import Preview from '../components/Preview';
+import { devices } from '../assets/styles/devices';
 import ExampleData from '../components/ExampleData';
 
 const Container = styled.main`
@@ -24,6 +25,7 @@ const FormSection = styled.div`
 
 const Main = styled.main`
   display: flex;
+  align-items: center;
   flex-direction: column;
   justify-content: center;
   max-width: 400px;
@@ -39,6 +41,12 @@ const StyledLogo = styled(Logo)`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+
+  @media ${devices.tablet} {
+    min-width: 300px;
+  }
 `;
 
 const InputField = styled.input`
@@ -139,7 +147,7 @@ const Signin = () => {
       <FormSection>
         <Main>
           <StyledLogo />
-          <ExampleData />
+          <ExampleData setFormError={setFormError} />
           {formError && <FormMessage error message={formError} />}
           <Form onSubmit={handleSubmit(onSubmit)}>
             <InputLabel>Email</InputLabel>

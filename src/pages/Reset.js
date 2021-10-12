@@ -116,8 +116,7 @@ const Reset = () => {
       setError('');
       setMessage('');
       setIsLoading(true);
-      const resp = await resetPassword(data.email);
-      console.log(resp);
+      await resetPassword(data.email);
       setMessage('Check your email');
     } catch (error) {
       setError(error.message);
